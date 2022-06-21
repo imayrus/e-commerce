@@ -19,7 +19,7 @@ type Owner struct {
 	Username      string `json:"username" validate:"required,unique,min=4"`
 	Email         string `json:"email" validate:"email,required"`
 	Password      string `json:"password" validate:"required,min=6"`
-	Owner_Id      int    `json:"user_id"`
+	Owner_Id      int    `json:"owner_id"`
 	StoreCategory Category
 	Balance       int `json:"balance"`
 }
@@ -64,4 +64,16 @@ type electronics struct {
 	TV         string
 	Headphone  string
 	CategoryId int
+}
+
+type Authentication struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type Token struct {
+	Role        string `json:"role"`
+	Email       string `json:"email"`
+	FirstName   string `json:"firstname"`
+	TokenString string `json:"token"`
 }

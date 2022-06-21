@@ -1,45 +1,47 @@
 package database
 
 import (
-	"errors"
 	"fmt"
-	"log"
 	"os"
 
+	"github.com/imayrus/e-commerce/models"
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 var db *gorm.DB
-var err errors
 
+func init() {
 
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file")
+	}
 
-dialect := os.Getenv("DIALECT")
-host := os.Getenv("HOST")
-dbPort := os.Getenv("DBPORT")
-user := os.Getenv("USER")
-dbName := os.Getenv("NAME")
-dbpassword := os.Getenv("PASSWORD")
+	username := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	dbName := os.Getenv("POSTGRES_DB")
+	dbHost := os.Getenv("db_host")
+	dbPort := os.Getenv("db_port")
 
+	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s", dbHost, username, dbName, password, dbPort)
+	fmt.Println(dbURI)
 
+	conn, err := gorm.Open("postgres", dbURI)
+	if err != nil {
+		fmt.Print(err)
+	}
 
-dbURI := fmt.Sprintf("host=%s user=%s dbname%s sslmode=disable password=%s port=%s", host, user, dbName, db
-password, dbPort)
-
-
-
-db, err = gorm.Open(dialect, dbURI)
-if err != nil{
-	log.Fatal(err)
-} else {
-	fmt.Println("Successfully connected to database")
+	db = conn
+	db.Debug().AutoMigrate(&models.User{}, &models.Owner{}, &models.Admin{})
 }
 
 
+func GetDB() *gorm.DB {
+	return db
+}
+	
 
-defer db.Close()
-
-
-
-db.AutoMigrate(&models.User)
-
+	
